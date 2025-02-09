@@ -1,12 +1,13 @@
 package com.example.userservice.service;
 
 import com.example.userservice.dto.UserDto;
-import com.example.userservice.entity.UserEntity;
+import com.example.userservice.entity.User;
 import com.example.userservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -17,21 +18,22 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserDto createUser(UserDto userDto) {
         userDto.setUserId(UUID.randomUUID().toString());
-        String encryptedPassword = "encrypted_password";
+        String encryptedPassword = passwordEncoder.encode(userDto.getPassword());
         userDto.setEncryptedPassword(encryptedPassword);
 
         log.info(userDto.getEmail());
 
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        UserEntity userEntity = mapper.map(userDto, UserEntity.class);
+        User newUser = mapper.map(userDto, User.class);
 
-        userRepository.save(userEntity);
+        userRepository.save(newUser);
 
-        return mapper.map(userEntity, UserDto.class);
+        return mapper.map(newUser, UserDto.class);
     }
 }
