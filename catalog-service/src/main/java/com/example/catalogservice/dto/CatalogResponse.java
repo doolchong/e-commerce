@@ -1,20 +1,20 @@
 package com.example.catalogservice.dto;
 
-import com.example.catalogservice.dto.CatalogResponse.Get;
+import com.example.catalogservice.dto.CatalogResponse.List;
 import com.example.catalogservice.entity.Catalog;
 
 import java.time.LocalDateTime;
 
-public sealed interface CatalogResponse permits Get {
+public sealed interface CatalogResponse permits List {
 
-    record Get(
+    record List(
             String productId,
             String productName,
             Integer stock,
             Integer unitPrice,
             LocalDateTime createdAt
     ) implements CatalogResponse {
-        public Get(Catalog catalog) {
+        public List(Catalog catalog) {
             this(
                     catalog.getProductId(),
                     catalog.getProductName(),
