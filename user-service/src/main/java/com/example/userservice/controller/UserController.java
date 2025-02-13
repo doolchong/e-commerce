@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/user-service")
+@RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -36,7 +36,7 @@ public class UserController {
         return greeting.getMessage();
     }
 
-    @PostMapping("/users")
+    @PostMapping
     public ResponseEntity<ResponseUser> createUser(@RequestBody RequestUser requestUser) {
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -49,7 +49,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseUser);
     }
 
-    @GetMapping("/users")
+    @GetMapping
     public ResponseEntity<List<ResponseUser>> getUsers() {
         List<User> userList = userService.getUserByAll();
 
@@ -59,7 +59,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
-    @GetMapping("/users/{userId}")
+    @GetMapping("/{userId}")
     public ResponseEntity<ResponseUser> getUser(@PathVariable String userId) {
         UserDto userDto = userService.getUserByUserId(userId);
 
