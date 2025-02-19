@@ -21,6 +21,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
 
     @Override
+    @Transactional
     public OrderResponse.Get createOrder(String userId, OrderRequest.Create orderRequest) {
         Order newOrder = Order.of(userId, orderRequest);
         Order savedOrder = orderRepository.save(newOrder);
