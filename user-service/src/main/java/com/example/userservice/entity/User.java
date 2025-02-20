@@ -1,14 +1,20 @@
 package com.example.userservice.entity;
 
+import com.example.userservice.dto.UserRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Getter
-@Setter
+@EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "users")
 public class User {
@@ -27,5 +33,23 @@ public class User {
     private String userId;
 
     @Column(nullable = false, unique = true)
-    private String encryptedPassword;
+    private String password;
+
+    @CreatedDate
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
+
+    private User(String encodedPassword, UserRequest.Signup userRequest) {
+        email = userRequest.email();
+        name = userRequest.name();
+        userId = UUID.randomUUID().toString();
+        password = encodedPassword;
+    }
+
+    public static User of(String encodedPassword, UserRequest.Signup userRequest) {
+        return new User(encodedPassword, userRequest);
+    }
 }

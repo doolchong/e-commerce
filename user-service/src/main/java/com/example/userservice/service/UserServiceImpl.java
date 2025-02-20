@@ -1,20 +1,16 @@
 package com.example.userservice.service;
 
-import com.example.userservice.dto.ResponseOrder;
-import com.example.userservice.dto.UserDto;
+import com.example.userservice.dto.UserRequest;
+import com.example.userservice.dto.UserResponse;
 import com.example.userservice.entity.User;
 import com.example.userservice.repository.UserRepository;
 import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -25,37 +21,25 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public UserDto createUser(UserDto userDto) {
-        userDto.setUserId(UUID.randomUUID().toString());
-        String encryptedPassword = passwordEncoder.encode(userDto.getPassword());
-        userDto.setEncryptedPassword(encryptedPassword);
+    public UserResponse.Get createUser(UserRequest.Signup userRequest) {
+        String encodedPassword = passwordEncoder.encode(userRequest.password());
 
-        log.info(userDto.getEmail());
+        User newUser = User.of(encodedPassword, userRequest);
+        User savedUser = userRepository.save(newUser);
 
-        ModelMapper mapper = new ModelMapper();
-        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        User newUser = mapper.map(userDto, User.class);
-
-        userRepository.save(newUser);
-
-        return mapper.map(newUser, UserDto.class);
+        return new UserResponse.Get(savedUser);
     }
 
     @Override
-    public UserDto getUserByUserId(String userId) {
+    public UserResponse.Get getUserByUserId(String userId) {
         User user = userRepository.findByUserId(userId).orElseThrow(
                 () -> new NotFoundException("User not found"));
 
-        UserDto userDto = new ModelMapper().map(user, UserDto.class);
-
-        List<ResponseOrder> orders = new ArrayList<>();
-        userDto.setOrders(orders);
-
-        return userDto;
+        return new UserResponse.Get(user);
     }
 
     @Override
-    public List<User> getUserByAll() {
-        return userRepository.findAll();
+    public Page<UserResponse.Summary> getUserByAll(int page, int size) {
+        return userRepository.findAll(PageRequest.of(page - 1, size)).map(UserResponse.Summary::new);
     }
 }

@@ -1,15 +1,14 @@
 package com.example.userservice.service;
 
-import com.example.userservice.dto.UserDto;
-import com.example.userservice.entity.User;
-
-import java.util.List;
+import com.example.userservice.dto.UserRequest;
+import com.example.userservice.dto.UserResponse;
+import org.springframework.data.domain.Page;
 
 public interface UserService {
 
-    UserDto createUser(UserDto userDto);
+    UserResponse.Get createUser(UserRequest.Signup userRequest);
 
-    UserDto getUserByUserId(String userId);
+    UserResponse.Get getUserByUserId(String userId);
 
-    List<User> getUserByAll();
+    Page<UserResponse.Summary> getUserByAll(int page, int size);
 }
