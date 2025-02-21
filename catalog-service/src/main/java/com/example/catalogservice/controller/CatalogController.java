@@ -23,6 +23,7 @@ public class CatalogController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(catalogService.getAllCatalogList(page, size));
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(catalogService.getAllCatalogList(page, size));
     }
 }

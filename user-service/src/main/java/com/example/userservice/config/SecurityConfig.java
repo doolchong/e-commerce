@@ -1,0 +1,85 @@
+package com.example.userservice.config;
+
+import com.example.userservice.security.AuthenticationFilter;
+import java.util.function.Supplier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authorization.AuthorizationDecision;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.IpAddressMatcher;
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+
+    @Value("${CLIENT_IP_ADDRESS}")
+    private String clientIpAddress;
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(
+            AuthenticationConfiguration authenticationConfiguration
+    ) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    @Bean
+    public AuthenticationFilter jwtAuthenticationFilter(
+            AuthenticationConfiguration authenticationConfiguration
+    ) throws Exception {
+        AuthenticationFilter authenticationFilter = new AuthenticationFilter();
+        authenticationFilter.setAuthenticationManager(
+                authenticationManager(authenticationConfiguration)
+        );
+        authenticationFilter.setFilterProcessesUrl("/auth/login");
+        return authenticationFilter;
+    }
+
+    @Bean
+    public SecurityFilterChain filterChain(
+            HttpSecurity http,
+            AuthenticationFilter authenticationFilter,
+            CorsConfig corsConfig
+    ) throws Exception {
+
+        return http
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(
+                        authorize -> authorize
+                                .requestMatchers("/**").access(this::hasIpAddress)
+                                .requestMatchers("/user/auth/**").permitAll()
+                )
+                .addFilter(corsConfig.corsFilter())
+                .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .headers(
+                        headers -> headers.frameOptions(
+                                HeadersConfigurer.FrameOptionsConfig::sameOrigin)
+                )
+                .build();
+    }
+
+    private AuthorizationDecision hasIpAddress(
+            Supplier<Authentication> authentication,
+            RequestAuthorizationContext object
+    ) {
+        return new AuthorizationDecision(
+                new IpAddressMatcher(clientIpAddress).matches(object.getRequest())
+        );
+    }
+}

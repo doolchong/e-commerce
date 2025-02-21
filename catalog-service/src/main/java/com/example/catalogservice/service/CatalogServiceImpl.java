@@ -19,6 +19,7 @@ public class CatalogServiceImpl implements CatalogService {
 
     @Override
     public Page<CatalogResponse.List> getAllCatalogList(int page, int size) {
-        return catalogRepository.findAll(PageRequest.of(page - 1, size)).map(CatalogResponse.List::new);
+        return catalogRepository.findAll(PageRequest.of(page - 1, size))
+                .map(CatalogResponse.List::new);
     }
 }

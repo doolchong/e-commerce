@@ -4,11 +4,14 @@ import com.example.userservice.dto.UserRequest;
 import com.example.userservice.dto.UserResponse;
 import com.example.userservice.entity.User;
 import com.example.userservice.repository.UserRepository;
+import com.example.userservice.security.PrincipalDetails;
 import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +22,15 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(email).orElseThrow(
+                () -> new NotFoundException("User not found")
+        );
+
+        return new PrincipalDetails(user);
+    }
 
     @Override
     public UserResponse.Get createUser(UserRequest.Signup userRequest) {
@@ -33,13 +45,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse.Get getUserByUserId(String userId) {
         User user = userRepository.findByUserId(userId).orElseThrow(
-                () -> new NotFoundException("User not found"));
+                () -> new NotFoundException("User not found")
+        );
 
         return new UserResponse.Get(user);
     }
 
     @Override
     public Page<UserResponse.Summary> getUserByAll(int page, int size) {
-        return userRepository.findAll(PageRequest.of(page - 1, size)).map(UserResponse.Summary::new);
+        return userRepository.findAll(PageRequest.of(page - 1, size))
+                .map(UserResponse.Summary::new);
     }
 }

@@ -3,7 +3,6 @@ package com.example.orderservice.dto;
 import com.example.orderservice.dto.OrderResponse.Get;
 import com.example.orderservice.dto.OrderResponse.List;
 import com.example.orderservice.entity.Order;
-
 import java.time.LocalDateTime;
 
 public sealed interface OrderResponse permits Get, List {
@@ -16,6 +15,7 @@ public sealed interface OrderResponse permits Get, List {
             Integer totalPrice,
             LocalDateTime createdAt
     ) implements OrderResponse {
+
         public Get(Order order) {
             this(
                     order.getProductId(),
@@ -36,6 +36,7 @@ public sealed interface OrderResponse permits Get, List {
             Integer totalPrice,
             LocalDateTime createdAt
     ) implements OrderResponse {
+
         public List(Order order) {
             this(
                     order.getProductId(),

@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public sealed interface UserRequest permits Signup, Login {
+
     record Signup(
             @Email
             @NotNull(message = "Email cannot be null")
@@ -19,7 +20,9 @@ public sealed interface UserRequest permits Signup, Login {
 
             @NotNull(message = "Password cannot be null")
             @Size(min = 8, message = "Password must equal or grater than 8 characters")
-            String password) implements UserRequest {
+            String password
+    ) implements UserRequest {
+
     }
 
     record Login(
@@ -30,6 +33,8 @@ public sealed interface UserRequest permits Signup, Login {
 
             @NotNull(message = "Password cannot be null")
             @Size(min = 8, message = "Password must equal or grater than 8 characters")
-            String password) implements UserRequest {
+            String password
+    ) implements UserRequest {
+
     }
 }

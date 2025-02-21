@@ -31,9 +31,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderResponse.Get getOrderByOrderId(String orderId) {
-        Order order = orderRepository.findByOrderId(orderId).orElseThrow(
-                () -> new NotFoundException("Order not found")
-        );
+        Order order = orderRepository.findByOrderId(orderId)
+                .orElseThrow(() -> new NotFoundException("Order not found"));
+
         return new OrderResponse.Get(order);
     }
 
