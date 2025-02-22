@@ -6,7 +6,7 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: http://${EUREKA_ENDPOINT}:8761/eureka
 
 spring:
   application:
@@ -14,26 +14,13 @@ spring:
   cloud:
     gateway:
       routes:
-        #        - id: user-service
-        #          uri: lb://USER-SERVICE
-        #          predicates:
-        #            - Path=/users/**
         - id: user-service
           uri: lb://USER-SERVICE
           predicates:
-            - Path=/users/auth/login
-            - Method=POST
+            - Path=/user-service/**
           filters:
             - RemoveRequestHeader=Cookie
-            - RewritePath=/users/(?<segment>.*), /$\{segment}
-        - id: user-service
-          uri: lb://USER-SERVICE
-          predicates:
-            - Path=/users/auth/signup
-            - Method=POST
-          filters:
-            - RemoveRequestHeader=Cookie
-            - RewritePath=/users/(?<segment>.*), /$\{segment}
+            - RewritePath=/user-service/(?<segment>.*), /$\{segment}
         - id: catalog-service
           uri: lb://CATALOG-SERVICE
           predicates:

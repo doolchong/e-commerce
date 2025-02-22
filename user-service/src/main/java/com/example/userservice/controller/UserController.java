@@ -27,12 +27,12 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(userRequest));
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/users/{userId}")
     public ResponseEntity<UserResponse.Get> getUser(@PathVariable String userId) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUserByUserId(userId));
     }
 
-    @GetMapping
+    @GetMapping("/users")
     public ResponseEntity<Page<UserResponse.Summary>> getUsers(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size

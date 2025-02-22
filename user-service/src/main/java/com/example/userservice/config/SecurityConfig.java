@@ -24,8 +24,8 @@ import org.springframework.security.web.util.matcher.IpAddressMatcher;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Value("${CLIENT_IP_ADDRESS}")
-    private String clientIpAddress;
+    @Value("${CLIENT_DOMAIN}")
+    private String clientDomain;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -63,7 +63,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         authorize -> authorize
                                 .requestMatchers("/**").access(this::hasIpAddress)
-                                .requestMatchers("/user/auth/**").permitAll()
+                                .requestMatchers("/auth/**").permitAll()
                 )
                 .addFilter(corsConfig.corsFilter())
                 .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
@@ -79,7 +79,7 @@ public class SecurityConfig {
             RequestAuthorizationContext object
     ) {
         return new AuthorizationDecision(
-                new IpAddressMatcher(clientIpAddress).matches(object.getRequest())
+                new IpAddressMatcher(clientDomain).matches(object.getRequest())
         );
     }
 }
