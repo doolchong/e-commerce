@@ -45,9 +45,9 @@ public class JwtUtil {
                 .sign(Algorithm.HMAC512(accessSecretKey));
     }
 
-    public String createRefreshToken(Long userId) {
+    public String createRefreshToken(String userId) {
         return BEARER_PREFIX + JWT.create()
-                .withSubject(userId.toString())
+                .withSubject(userId)
                 .withExpiresAt(
                         new Date(System.currentTimeMillis() + 60 * 60 * 24 * 14 * 1000L) // 2주
                 )

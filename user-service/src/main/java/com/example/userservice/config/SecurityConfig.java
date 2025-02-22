@@ -1,7 +1,9 @@
 package com.example.userservice.config;
 
 import com.example.userservice.security.AuthenticationFilter;
+import com.example.userservice.util.JwtUtil;
 import java.util.function.Supplier;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,10 +24,13 @@ import org.springframework.security.web.util.matcher.IpAddressMatcher;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     @Value("${CLIENT_DOMAIN}")
     private String clientDomain;
+
+    private final JwtUtil jwtUtil;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -43,7 +48,7 @@ public class SecurityConfig {
     public AuthenticationFilter jwtAuthenticationFilter(
             AuthenticationConfiguration authenticationConfiguration
     ) throws Exception {
-        AuthenticationFilter authenticationFilter = new AuthenticationFilter();
+        AuthenticationFilter authenticationFilter = new AuthenticationFilter(jwtUtil);
         authenticationFilter.setAuthenticationManager(
                 authenticationManager(authenticationConfiguration)
         );

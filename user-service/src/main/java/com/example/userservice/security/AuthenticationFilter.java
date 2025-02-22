@@ -47,13 +47,15 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
             HttpServletResponse response,
             FilterChain chain,
             Authentication authResult
-    ) throws IOException, ServletException {
+    ) {
         PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
         String userId = principalDetails.getUser().getUserId();
 
         String accessToken = jwtUtil.createAccessToken(userId);
+        String refreshToken = jwtUtil.createRefreshToken(userId);
 
         jwtUtil.addAccessTokenToHeader(response, accessToken);
+        jwtUtil.addRefreshTokenToCookie(response, refreshToken);
     }
 
     @Override
@@ -62,6 +64,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
             HttpServletResponse response,
             AuthenticationException failed
     ) throws IOException, ServletException {
-        log.info("Login fail test");
+        super.unsuccessfulAuthentication(request, response, failed);
+        response.setStatus(401);
     }
 }
