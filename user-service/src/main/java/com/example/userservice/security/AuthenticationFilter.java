@@ -50,9 +50,10 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     ) {
         PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
         String userId = principalDetails.getUser().getUserId();
+        String userRole = principalDetails.getUser().getUserRole().getAuthority();
 
         String accessToken = jwtUtil.createAccessToken(userId);
-        String refreshToken = jwtUtil.createRefreshToken(userId);
+        String refreshToken = jwtUtil.createRefreshToken(userId, userRole);
 
         jwtUtil.addAccessTokenToHeader(response, accessToken);
         jwtUtil.addRefreshTokenToCookie(response, refreshToken);

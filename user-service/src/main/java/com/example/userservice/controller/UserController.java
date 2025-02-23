@@ -2,13 +2,14 @@ package com.example.userservice.controller;
 
 import com.example.userservice.dto.UserRequest;
 import com.example.userservice.dto.UserResponse;
+import com.example.userservice.security.PrincipalDetails;
 import com.example.userservice.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,9 +28,12 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(userRequest));
     }
 
-    @GetMapping("/users/{userId}")
-    public ResponseEntity<UserResponse.Get> getUser(@PathVariable String userId) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getUserByUserId(userId));
+    @GetMapping("/users/me")
+    public ResponseEntity<UserResponse.Get> getUser(
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    ) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(userService.getUserByUserId(principalDetails.getUser().getUserId()));
     }
 
     @GetMapping("/users")

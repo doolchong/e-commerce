@@ -11,6 +11,8 @@ eureka:
 spring:
   application:
     name: api-gateway-service
+  config:
+    import: optional:file:./api-gateway-service/.env[.properties]
   cloud:
     gateway:
       routes:

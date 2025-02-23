@@ -20,7 +20,10 @@ public sealed interface UserRequest permits Signup, Login {
 
             @NotNull(message = "Password cannot be null")
             @Size(min = 8, message = "Password must equal or grater than 8 characters")
-            String password
+            String password,
+
+            @NotNull(message = "UserRole cannot be null")
+            String userRole
     ) implements UserRequest {
 
     }

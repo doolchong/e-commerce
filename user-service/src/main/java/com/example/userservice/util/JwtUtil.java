@@ -35,9 +35,6 @@ public class JwtUtil {
     @Value("${JWT_REFRESH_SECRET_KEY}")
     private String refreshSecretKey;
 
-    @Value("${CLIENT_DOMAIN}")
-    private String clientDomain;
-
     public String createAccessToken(String userId) {
         return BEARER_PREFIX + JWT.create()
                 .withSubject(userId)
@@ -45,9 +42,10 @@ public class JwtUtil {
                 .sign(Algorithm.HMAC512(accessSecretKey));
     }
 
-    public String createRefreshToken(String userId) {
+    public String createRefreshToken(String userId, String role) {
         return BEARER_PREFIX + JWT.create()
                 .withSubject(userId)
+                .withClaim("role", role)
                 .withExpiresAt(
                         new Date(System.currentTimeMillis() + 60 * 60 * 24 * 14 * 1000L) // 2주
                 )
@@ -68,8 +66,8 @@ public class JwtUtil {
         cookie.setMaxAge(60 * 60 * 24 * 14);
         cookie.setPath("/"); // 쿠키의 경로를 루트로 설정
         cookie.setSecure(false); // 운영환경에서는 true(https)
-        cookie.setDomain(clientDomain);
-        cookie.setAttribute("SameSite", "None"); // 프론트와 백엔드가 도메인이 다르면 Lax 또는 None
+//        cookie.setDomain("example.com");
+        cookie.setAttribute("SameSite", "Lax"); // 프론트와 백엔드가 도메인이 다르면 Lax 또는 None
         response.addCookie(cookie);
     }
 

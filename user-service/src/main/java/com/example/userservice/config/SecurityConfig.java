@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,8 +28,8 @@ import org.springframework.security.web.util.matcher.IpAddressMatcher;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Value("${CLIENT_DOMAIN}")
-    private String clientDomain;
+    @Value("${CLIENT_ENDPOINT}")
+    private String clientEndpoint;
 
     private final JwtUtil jwtUtil;
 
@@ -65,6 +66,9 @@ public class SecurityConfig {
 
         return http
                 .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(
+                        session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
                 .authorizeHttpRequests(
                         authorize -> authorize
                                 .requestMatchers("/**").access(this::hasIpAddress)
@@ -73,8 +77,8 @@ public class SecurityConfig {
                 .addFilter(corsConfig.corsFilter())
                 .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .headers(
-                        headers -> headers.frameOptions(
-                                HeadersConfigurer.FrameOptionsConfig::sameOrigin)
+                        headers -> headers
+                                .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
                 )
                 .build();
     }
@@ -84,7 +88,7 @@ public class SecurityConfig {
             RequestAuthorizationContext object
     ) {
         return new AuthorizationDecision(
-                new IpAddressMatcher(clientDomain).matches(object.getRequest())
+                new IpAddressMatcher(clientEndpoint).matches(object.getRequest())
         );
     }
 }
