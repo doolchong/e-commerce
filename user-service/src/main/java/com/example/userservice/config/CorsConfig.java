@@ -1,5 +1,6 @@
 package com.example.userservice.config;
 
+import org.apache.http.HttpHeaders;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
@@ -21,7 +22,7 @@ public class CorsConfig {
         configuration.addAllowedOrigin("http://localhost:3000");
 
         // 클라이언트가 접근할 수 있는 헤더를 명시적으로 추가
-        configuration.addExposedHeader("Content-Type");
+        configuration.addExposedHeader(HttpHeaders.CONTENT_TYPE);
         configuration.addExposedHeader("Set-Cookie");
 
         // 모든 HTTP 메서드(GET, POST, PUT, DELETE 등)를 허용

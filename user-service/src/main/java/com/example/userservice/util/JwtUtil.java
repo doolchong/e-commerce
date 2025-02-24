@@ -15,6 +15,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpHeaders;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -22,8 +23,6 @@ import org.springframework.util.StringUtils;
 @Slf4j
 @Component
 public class JwtUtil {
-
-    private final String AUTHORIZATION_HEADER = "Authorization";
 
     private final String REFRESH_TOKEN_HEADER = "refreshToken";
 
@@ -54,7 +53,7 @@ public class JwtUtil {
 
     // Access Token 헤더 설정
     public void addAccessTokenToHeader(HttpServletResponse response, String accessToken) {
-        response.addHeader(AUTHORIZATION_HEADER, accessToken);
+        response.addHeader(HttpHeaders.AUTHORIZATION, accessToken);
     }
 
     // Refresh Token 쿠키 설정
@@ -73,7 +72,7 @@ public class JwtUtil {
 
     // header 에서 JWT 가져오기
     public String getAccessTokenFromHeader(HttpServletRequest request) {
-        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
+        String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
             return bearerToken.substring(7);
         }

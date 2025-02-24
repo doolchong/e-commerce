@@ -80,6 +80,8 @@ public class SecurityConfig {
                         headers -> headers
                                 .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
                 )
+                .formLogin(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
                 .build();
     }
 
