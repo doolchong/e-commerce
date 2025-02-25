@@ -15,6 +15,20 @@ spring:
     import: optional:file:./api-gateway-service/.env[.properties]
   cloud:
     gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowed-origins:
+              - "http://localhost:3000"  # React 앱 주소
+            allowed-methods:
+              - "*"  # 모든 HTTP 메서드 허용
+            allowed-headers:
+              - "*"  # 모든 요청 헤더 허용
+            allow-credentials: true
+            exposed-headers:
+              - "Content-Type"
+              - "Set-Cookie"
+              - "Authorization"
       routes:
         - id: user-service
           uri: lb://USER-SERVICE

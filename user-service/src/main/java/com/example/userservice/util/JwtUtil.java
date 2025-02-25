@@ -2,12 +2,6 @@ package com.example.userservice.util;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.AlgorithmMismatchException;
-import com.auth0.jwt.exceptions.JWTDecodeException;
-import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.exceptions.SignatureVerificationException;
-import com.auth0.jwt.exceptions.TokenExpiredException;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -91,27 +85,5 @@ public class JwtUtil {
             }
         }
         return null;  // 쿠키가 없으면 null 반환
-    }
-
-    // 토큰 검증 및 디코딩
-    public DecodedJWT validateToken(String token) {
-        token = token.replace(BEARER_PREFIX, ""); // Bearer 접두사 제거
-
-        try {
-            return JWT
-                    .require(Algorithm.HMAC512(accessSecretKey))
-                    .build()
-                    .verify(token); // 검증 성공 시 DecodedJWT 반환
-        } catch (TokenExpiredException e) {
-            throw new TokenExpiredException("Expired JWT token", e.getExpiredOn());
-        } catch (SignatureVerificationException e) {
-            throw new JWTVerificationException("Invalid JWT signature");
-        } catch (AlgorithmMismatchException e) {
-            throw new JWTVerificationException("Unsupported JWT token");
-        } catch (JWTDecodeException | IllegalArgumentException e) {
-            throw new JWTVerificationException("Invalid JWT claims");
-        } catch (JWTVerificationException e) {
-            throw new JWTVerificationException("JWT verification failed");
-        }
     }
 }

@@ -47,25 +47,42 @@ public class AuthorizationFilter extends AbstractGatewayFilterFactory<Authorizat
 
             String authorizationHeader = Objects.requireNonNull(
                     request.getHeaders().get(HttpHeaders.AUTHORIZATION)).get(0);
-            String jwt = authorizationHeader.replace("Bearer ", "");
 
-            if (!isJwtValid(jwt)) {
-                return onError(exchange, "JWT token is not valid");
+            try {
+                // JWT 토큰 검증 및 사용자 정보 추출
+                DecodedJWT decodedJWT = validateToken(authorizationHeader);
+
+                // 사용자 정보를 헤더에 추가
+                ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
+                        .header("X-User-Id", decodedJWT.getSubject())
+                        .header("X-User-Role", decodedJWT.getClaim("role").asString())
+                        // 필요한 경우 추가 정보도 헤더에 포함
+                        .build();
+
+                // 변경된 요청으로 교환 객체 업데이트
+                ServerWebExchange mutatedExchange = exchange.mutate()
+                        .request(mutatedRequest)
+                        .build();
+
+                // 변경된 교환 객체로 필터 체인 계속 진행
+                return chain.filter(mutatedExchange);
+
+            } catch (Exception e) {
+                log.error("JWT validation error: {}", e.getMessage());
+                return onError(exchange, e.getMessage());
             }
-
-            return chain.filter(exchange);
         });
     }
 
-    private boolean isJwtValid(String jwt) {
-        boolean returnValue = true;
+    // 토큰 검증 및 디코딩
+    public DecodedJWT validateToken(String token) {
+        token = token.replace("Bearer ", ""); // Bearer 접두사 제거
 
-        DecodedJWT info;
         try {
-            info = JWT
+            return JWT
                     .require(Algorithm.HMAC512(accessSecretKey))
                     .build()
-                    .verify(jwt); // 검증 성공 시 DecodedJWT 반환
+                    .verify(token); // 검증 성공 시 DecodedJWT 반환
         } catch (TokenExpiredException e) {
             throw new TokenExpiredException("Expired JWT token", e.getExpiredOn());
         } catch (SignatureVerificationException e) {
@@ -77,14 +94,6 @@ public class AuthorizationFilter extends AbstractGatewayFilterFactory<Authorizat
         } catch (JWTVerificationException e) {
             throw new JWTVerificationException("JWT verification failed");
         }
-
-        String subject = info.getSubject();
-
-        if (subject == null || subject.isEmpty()) {
-            returnValue = false;
-        }
-
-        return returnValue;
     }
 
     private Mono<Void> onError(ServerWebExchange exchange, String errorMessage) {
