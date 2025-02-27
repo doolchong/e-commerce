@@ -73,6 +73,7 @@ public class SecurityConfig {
                         authorize -> authorize
                                 .requestMatchers("/**").access(this::hasIpAddress)
                                 .requestMatchers("/auth/**").permitAll()
+                                .requestMatchers("/actuator/**").permitAll()
                 )
                 .addFilter(corsConfig.corsFilter())
                 .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)

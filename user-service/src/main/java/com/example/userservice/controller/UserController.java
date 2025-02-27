@@ -5,6 +5,7 @@ import com.example.userservice.dto.UserResponse;
 import com.example.userservice.security.PrincipalDetails;
 import com.example.userservice.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class UserController {
 
+    private final Environment env;
     private final UserService userService;
+
+    @GetMapping("/test")
+    public String test() {
+        return String.format("It's Working in User Service"
+                + ", port(local.server.port)=" + env.getProperty("local.server.port")
+                + ", port(server.port)=" + env.getProperty("server.port")
+                + ", access token secret key=" + env.getProperty("jwt.token.access.secret.key")
+                + ", refresh token secret key=" + env.getProperty("jwt.token.refresh.secret.key"));
+    }
 
     @PostMapping("/auth/signup")
     public ResponseEntity<UserResponse.Get> signup(@RequestBody UserRequest.Signup userRequest) {

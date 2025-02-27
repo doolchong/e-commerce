@@ -22,10 +22,10 @@ public class JwtUtil {
 
     private final String BEARER_PREFIX = "Bearer ";
 
-    @Value("${JWT_ACCESS_SECRET_KEY}")
+    @Value("${jwt.token.access.secret.key}")
     private String accessSecretKey;
 
-    @Value("${JWT_REFRESH_SECRET_KEY}")
+    @Value("${jwt.token.refresh.secret.key}")
     private String refreshSecretKey;
 
     public String createAccessToken(String userId) {

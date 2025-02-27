@@ -4,8 +4,13 @@ server:
 spring:
   application:
     name: user-service
+  cloud:
+    config:
+      name: ecommerce
   config:
-    import: optional:file:./user-service/.env[.properties]
+    import:
+      - optional:file:./user-service/.env[.properties]
+      - optional:configserver:http://localhost:8888
   jpa:
     hibernate:
       ddl-auto: update
