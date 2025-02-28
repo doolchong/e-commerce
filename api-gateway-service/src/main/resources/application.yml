@@ -12,8 +12,12 @@ spring:
   application:
     name: api-gateway-service
   config:
-    import: optional:file:./api-gateway-service/.env[.properties]
+    import:
+      - optional:file:./api-gateway-service/.env[.properties]
+      - optional:configserver:http://localhost:8888
   cloud:
+    config:
+      name: ecommerce
     gateway:
       globalcors:
         cors-configurations:

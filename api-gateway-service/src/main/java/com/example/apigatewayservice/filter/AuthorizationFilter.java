@@ -25,7 +25,7 @@ import reactor.core.publisher.Mono;
 @Component
 public class AuthorizationFilter extends AbstractGatewayFilterFactory<AuthorizationFilter.Config> {
 
-    @Value("${JWT_ACCESS_SECRET_KEY}")
+    @Value("${jwt.token.access.secret.key}")
     private String accessSecretKey;
 
     public AuthorizationFilter() {
