@@ -64,3 +64,9 @@ spring:
           uri: lb://ORDER-SERVICE
           predicates:
             - Path=/orders/**
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh, health, beans
