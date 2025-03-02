@@ -39,6 +39,7 @@ public class AuthorizationFilter extends AbstractGatewayFilterFactory<Authorizat
     @Override
     public GatewayFilter apply(Config config) {
         return ((exchange, chain) -> {
+            log.info(accessSecretKey);
             ServerHttpRequest request = exchange.getRequest();
 
             if (!request.getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {

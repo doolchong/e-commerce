@@ -17,7 +17,7 @@ spring:
       - optional:configserver:http://localhost:8888
   cloud:
     config:
-      name: ecommerce
+      name: ecommerce-dev
     gateway:
       globalcors:
         cors-configurations:
