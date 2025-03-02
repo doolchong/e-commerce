@@ -4,8 +4,11 @@ server:
 spring:
   application:
     name: config-service
+  config:
+    import:
+      - optional:file:./config-service/.env[.properties]
   cloud:
     config:
       server:
         git:
-          uri: file:///c:/Users/fatal/Desktop/git-local-repo
+          uri: ${CONFIG_URI}
