@@ -64,9 +64,14 @@ spring:
           uri: lb://ORDER-SERVICE
           predicates:
             - Path=/orders/**
+  rabbitmq:
+    host: ${RABBITMQ_ENDPOINT}
+    port: 5672
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
 
 management:
   endpoints:
     web:
       exposure:
-        include: refresh, health, beans
+        include: refresh, health, beans, httptrace, busrefresh

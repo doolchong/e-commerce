@@ -6,11 +6,16 @@ spring:
     name: user-service
   cloud:
     config:
-      name: ecommerce
+      name: ecommerce-dev
   config:
     import:
       - optional:file:./user-service/.env[.properties]
       - optional:configserver:http://localhost:8888
+  rabbitmq:
+    host: ${RABBITMQ_ENDPOINT}
+    port: 5672
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: update
@@ -38,4 +43,4 @@ management:
   endpoints:
     web:
       exposure:
-        include: refresh, health, beans
+        include: refresh, health, beans, busrefresh

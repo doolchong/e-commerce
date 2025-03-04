@@ -12,3 +12,14 @@ spring:
       server:
         git:
           uri: ${CONFIG_URI}
+  rabbitmq:
+    host: ${RABBITMQ_ENDPOINT}
+    port: 5672
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, busrefresh
