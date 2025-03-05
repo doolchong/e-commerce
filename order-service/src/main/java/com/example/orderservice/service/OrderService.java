@@ -10,5 +10,5 @@ public interface OrderService {
 
     OrderResponse.Get getOrderByOrderId(String orderId);
 
-    Page<OrderResponse.List> getOrderListByUserId(String userId, int page, int size);
+    Page<OrderResponse.Get> getOrderListByUserId(String userId, int page, int size);
 }

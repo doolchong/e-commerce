@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 
 public interface UserService extends UserDetailsService {
 
-    UserResponse.Get createUser(UserRequest.Signup userRequest);
+    UserResponse.Summary createUser(UserRequest.Signup userRequest);
 
     UserResponse.Get getUserByUserId(String userId);
 

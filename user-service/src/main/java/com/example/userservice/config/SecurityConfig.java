@@ -28,7 +28,7 @@ import org.springframework.security.web.util.matcher.IpAddressMatcher;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Value("${CLIENT_ENDPOINT}")
+    @Value("${client.endpoint}")
     private String clientEndpoint;
 
     private final JwtUtil jwtUtil;

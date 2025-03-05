@@ -3,7 +3,6 @@ package com.example.userservice.dto;
 import com.example.userservice.dto.UserResponse.Get;
 import com.example.userservice.dto.UserResponse.Summary;
 import com.example.userservice.entity.User;
-import java.util.ArrayList;
 
 public sealed interface UserResponse permits Get, Summary {
 
@@ -11,15 +10,15 @@ public sealed interface UserResponse permits Get, Summary {
             String email,
             String name,
             String userId,
-            java.util.List<ResponseOrder> orderList
+            OrderResponse.Paged orderList
     ) implements UserResponse {
 
-        public Get(User user) {
+        public Get(User user, OrderResponse.Paged orderList) {
             this(
                     user.getEmail(),
                     user.getName(),
                     user.getUserId(),
-                    new ArrayList<>()
+                    orderList
             );
         }
     }

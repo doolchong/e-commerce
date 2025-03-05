@@ -38,8 +38,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Page<OrderResponse.List> getOrderListByUserId(String userId, int page, int size) {
+    public Page<OrderResponse.Get> getOrderListByUserId(String userId, int page, int size) {
         return orderRepository.findByUserId(userId, PageRequest.of(page - 1, size))
-                .map(OrderResponse.List::new);
+                .map(OrderResponse.Get::new);
     }
 }

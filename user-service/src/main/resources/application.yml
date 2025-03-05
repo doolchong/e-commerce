@@ -6,41 +6,7 @@ spring:
     name: user-service
   cloud:
     config:
-      name: ecommerce-dev
+      name: ecommerce-dev, user-service-dev
   config:
     import:
-      - optional:file:./user-service/.env[.properties]
-      - optional:configserver:http://localhost:8888
-  rabbitmq:
-    host: ${RABBITMQ_ENDPOINT}
-    port: 5672
-    username: ${RABBITMQ_USERNAME}
-    password: ${RABBITMQ_PASSWORD}
-  jpa:
-    hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        show_sql: true
-        format_sql: true
-        use_sql_comments: true
-  datasource:
-    url: jdbc:mysql://${RDS_ENDPOINT}:3306/${RDS_DBNAME}
-    username: ${RDS_USER}
-    password: ${RDS_PASSWORD}
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
-eureka:
-  instance:
-    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
-  client:
-    register-with-eureka: true
-    fetch-registry: true
-    service-url:
-      defaultZone: http://${EUREKA_ENDPOINT}:8761/eureka
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: refresh, health, beans, busrefresh
+      - optional:configserver:${CONFIG_SERVER_URI}

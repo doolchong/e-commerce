@@ -4,14 +4,13 @@ server:
 spring:
   application:
     name: config-service
-  config:
-    import:
-      - optional:file:./config-service/.env[.properties]
   cloud:
     config:
       server:
         git:
           uri: ${CONFIG_URI}
+          username: ${GITHUB_USERNAME}
+          password: ${GITHUB_TOKEN}
   rabbitmq:
     host: ${RABBITMQ_ENDPOINT}
     port: 5672
@@ -23,3 +22,6 @@ management:
     web:
       exposure:
         include: health, busrefresh
+
+encrypt:
+  key: ${ENCRYPT_KEY}

@@ -1,77 +1,12 @@
 server:
   port: 8080
 
-eureka:
-  client:
-    register-with-eureka: true
-    fetch-registry: true
-    service-url:
-      defaultZone: http://${EUREKA_ENDPOINT}:8761/eureka
-
 spring:
   application:
     name: api-gateway-service
-  config:
-    import:
-      - optional:file:./api-gateway-service/.env[.properties]
-      - optional:configserver:http://localhost:8888
   cloud:
     config:
-      name: ecommerce-dev
-    gateway:
-      globalcors:
-        cors-configurations:
-          '[/**]':
-            allowed-origins:
-              - "http://localhost:3000"  # React 앱 주소
-            allowed-methods:
-              - "*"  # 모든 HTTP 메서드 허용
-            allowed-headers:
-              - "*"  # 모든 요청 헤더 허용
-            allow-credentials: true
-            exposed-headers:
-              - "Content-Type"
-              - "Set-Cookie"
-              - "Authorization"
-      routes:
-        - id: user-service
-          uri: lb://USER-SERVICE
-          predicates:
-            - Path=/user-service/auth/**
-          filters:
-            - RemoveRequestHeader=Cookie
-            - RewritePath=/user-service/(?<segment>.*), /$\{segment}
-        - id: user-service
-          uri: lb://USER-SERVICE
-          predicates:
-            - Path=/user-service/actuator/**
-          filters:
-            - RemoveRequestHeader=Cookie
-            - RewritePath=/user-service/(?<segment>.*), /$\{segment}
-        - id: user-service
-          uri: lb://USER-SERVICE
-          predicates:
-            - Path=/user-service/**
-          filters:
-            - RemoveRequestHeader=Cookie
-            - RewritePath=/user-service/(?<segment>.*), /$\{segment}
-            - AuthorizationFilter
-        - id: catalog-service
-          uri: lb://CATALOG-SERVICE
-          predicates:
-            - Path=/catalogs/**
-        - id: order-service
-          uri: lb://ORDER-SERVICE
-          predicates:
-            - Path=/orders/**
-  rabbitmq:
-    host: ${RABBITMQ_ENDPOINT}
-    port: 5672
-    username: ${RABBITMQ_USERNAME}
-    password: ${RABBITMQ_PASSWORD}
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: refresh, health, beans, httptrace, busrefresh
+      name: ecommerce-dev, api-gateway-service-dev
+  config:
+    import:
+      - optional:configserver:${CONFIG_SERVER_URI}

@@ -32,7 +32,7 @@ public class OrderController {
     }
 
     @GetMapping("/users/{userId}")
-    public ResponseEntity<Page<OrderResponse.List>> getOrderList(
+    public ResponseEntity<Page<OrderResponse.Get>> getOrderList(
             @PathVariable("userId") String userId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size
