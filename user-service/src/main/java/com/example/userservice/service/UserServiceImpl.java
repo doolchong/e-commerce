@@ -7,11 +7,9 @@ import com.example.userservice.dto.UserResponse;
 import com.example.userservice.entity.User;
 import com.example.userservice.repository.UserRepository;
 import com.example.userservice.security.PrincipalDetails;
-import feign.FeignException;
 import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,9 +21,6 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-
-    @Value("${order.service.url}")
-    private String orderServiceUrl;
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -56,12 +51,7 @@ public class UserServiceImpl implements UserService {
                 () -> new NotFoundException("User not found")
         );
 
-        OrderResponse.Paged orderList = null;
-        try {
-            orderList = orderServiceClient.getOrderList(userId);
-        } catch (FeignException e) {
-            log.error(e.getMessage());
-        }
+        OrderResponse.Paged orderList = orderServiceClient.getOrderList(userId);
 
         return new UserResponse.Get(user, orderList);
     }
