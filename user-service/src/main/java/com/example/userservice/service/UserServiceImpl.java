@@ -7,6 +7,7 @@ import com.example.userservice.dto.UserResponse;
 import com.example.userservice.entity.User;
 import com.example.userservice.repository.UserRepository;
 import com.example.userservice.security.PrincipalDetails;
+import feign.FeignException;
 import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,7 +56,12 @@ public class UserServiceImpl implements UserService {
                 () -> new NotFoundException("User not found")
         );
 
-        OrderResponse.Paged orderList = orderServiceClient.getOrderList(userId);
+        OrderResponse.Paged orderList = null;
+        try {
+            orderList = orderServiceClient.getOrderList(userId);
+        } catch (FeignException e) {
+            log.error(e.getMessage());
+        }
 
         return new UserResponse.Get(user, orderList);
     }
