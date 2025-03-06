@@ -1,5 +1,6 @@
 package com.example.userservice.service;
 
+import com.example.userservice.client.OrderServiceClient;
 import com.example.userservice.dto.OrderResponse;
 import com.example.userservice.dto.UserRequest;
 import com.example.userservice.dto.UserResponse;
@@ -10,16 +11,12 @@ import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @Service
@@ -31,7 +28,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final RestTemplate restTemplate;
+    private final OrderServiceClient orderServiceClient;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -58,15 +55,7 @@ public class UserServiceImpl implements UserService {
                 () -> new NotFoundException("User not found")
         );
 
-        ResponseEntity<OrderResponse.Paged> orderListResponse = restTemplate.exchange(
-                String.format(orderServiceUrl, userId),
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<OrderResponse.Paged>() {
-                }
-        );
-
-        OrderResponse.Paged orderList = orderListResponse.getBody();
+        OrderResponse.Paged orderList = orderServiceClient.getOrderList(userId);
 
         return new UserResponse.Get(user, orderList);
     }
