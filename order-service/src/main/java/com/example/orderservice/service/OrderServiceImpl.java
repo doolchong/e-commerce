@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
+    private final KafkaProducer kafkaProducer;
 
     @Override
     @Transactional
@@ -26,7 +27,9 @@ public class OrderServiceImpl implements OrderService {
         Order newOrder = Order.of(userId, orderRequest);
         Order savedOrder = orderRepository.save(newOrder);
 
-        return new OrderResponse.Get(savedOrder);
+        OrderResponse.Get orderResponse = new OrderResponse.Get(savedOrder);
+
+        return kafkaProducer.send("example-catalog-topic", orderResponse);
     }
 
     @Override

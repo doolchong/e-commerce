@@ -18,7 +18,7 @@ public class CatalogController {
 
     private final CatalogService catalogService;
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<Page<CatalogResponse.List>> getCatalogList(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size
