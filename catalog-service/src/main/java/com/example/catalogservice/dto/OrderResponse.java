@@ -6,13 +6,14 @@ import java.time.LocalDateTime;
 public sealed interface OrderResponse permits Get {
 
     record Get(
-            String productId,
             String orderId,
+            String userId,
+            String productId,
             Integer quantity,
             Integer unitPrice,
             Integer totalPrice,
             LocalDateTime createdAt
     ) implements OrderResponse {
-
+        
     }
 }

@@ -1,6 +1,5 @@
 package com.example.orderservice.config;
 
-import com.example.orderservice.dto.OrderResponse;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -24,7 +23,7 @@ public class KafkaProducerConfig {
     private String KAFKA_ADDRESS;
 
     @Bean
-    public ProducerFactory<String, OrderResponse.Get> producerFactory() {
+    public ProducerFactory<String, Object> producerFactory() {
         Map<String, Object> properties = new HashMap<>();
         // kafka container host
         properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KAFKA_ADDRESS);
@@ -35,7 +34,7 @@ public class KafkaProducerConfig {
     }
 
     @Bean
-    public KafkaTemplate<String, OrderResponse.Get> kafkaTemplate() {
+    public KafkaTemplate<String, Object> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
 }

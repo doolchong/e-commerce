@@ -20,6 +20,7 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
     private final KafkaProducer kafkaProducer;
+    private final OrderProducer orderProducer;
 
     @Override
     @Transactional
@@ -28,8 +29,10 @@ public class OrderServiceImpl implements OrderService {
         Order savedOrder = orderRepository.save(newOrder);
 
         OrderResponse.Get orderResponse = new OrderResponse.Get(savedOrder);
+        kafkaProducer.send("example-catalog-topic", orderResponse);
+        orderProducer.send("orders", orderResponse);
 
-        return kafkaProducer.send("example-catalog-topic", orderResponse);
+        return orderResponse;
     }
 
     @Override
