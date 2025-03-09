@@ -8,7 +8,6 @@ import java.util.List;
 
 public sealed interface OrderResponse permits Get, Paged {
 
-
     @JsonInclude(JsonInclude.Include.NON_NULL)
     record Get(
             String productId,

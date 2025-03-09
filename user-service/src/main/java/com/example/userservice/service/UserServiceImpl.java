@@ -8,8 +8,11 @@ import com.example.userservice.entity.User;
 import com.example.userservice.repository.UserRepository;
 import com.example.userservice.security.PrincipalDetails;
 import jakarta.ws.rs.NotFoundException;
+import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cloud.circuitbreaker.resilience4j.Resilience4JCircuitBreakerFactory;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,6 +28,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final OrderServiceClient orderServiceClient;
+    private final Resilience4JCircuitBreakerFactory circuitBreakerFactory;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -51,7 +55,17 @@ public class UserServiceImpl implements UserService {
                 () -> new NotFoundException("User not found")
         );
 
-        OrderResponse.Paged orderList = orderServiceClient.getOrderList(userId);
+        CircuitBreaker circuitBreaker = circuitBreakerFactory.create("circuitbreaker");
+        OrderResponse.Paged orderList = circuitBreaker.run(
+                () -> orderServiceClient.getOrderList(userId),
+                throwable -> new OrderResponse.Paged(
+                        new ArrayList<>(),
+                        0,
+                        0,
+                        0,
+                        0
+                )
+        );
 
         return new UserResponse.Get(user, orderList);
     }
